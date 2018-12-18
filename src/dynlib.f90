@@ -41,7 +41,7 @@ double precision, dimension(:,:), allocatable :: tr1, tr2, tthe
 
 integer,parameter :: kr1 = 4     !! order in r1
 integer,parameter :: kr2 = 4     !! order in r2
-integer,parameter :: kt = 2     !! order in theta
+integer,parameter :: kt = 4     !! order in theta
 integer,parameter :: iknot = 0  !! automatically select the knots
 
 double precision :: tol
@@ -87,8 +87,11 @@ write(*,'(A)')'Lets start the dynamics'
 !!energy(:,:,:,:)=0d0
 
 allocate(epair(nsta),epair_t1(nsta),d_epair(nsta),d_epair_t1(nsta),d2_epair(nsta))
-d_epair_t1(:) = 0d0
+epair(:) = 0d0
 epair_t1(:) = 0d0
+d_epair(:) = 0d0
+d_epair_t1(:) = 0d0
+d2_epair(:) = 0d0
 
 !
 ! Set-up the interpolation
