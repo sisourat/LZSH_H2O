@@ -1,0 +1,1 @@
+python/home/nico/Workspace/SHARC/sharc/bin/wigner.py --MOLPRO -n 10000 freq.out

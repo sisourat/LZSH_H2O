@@ -1,0 +1,9 @@
+! namelist data file
+&input
+ dt=20.0
+ dr=0.005
+ fpot='pes.txt'
+ fxyz='xyz.txt'
+ tf=1000.0
+ fsta=2
+/
