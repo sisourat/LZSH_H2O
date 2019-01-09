@@ -1,7 +1,7 @@
 import sys
 import subprocess
 
-ifin = 10
+ifin = 1000
 istart = 0
 
 f = open(sys.argv[1],"r")
@@ -31,7 +31,7 @@ while i<ifin:
                         l = f.readline()
                         d = l.split()
                         if(i>istart):
-                                print >> fgeom, '  '.join(d[0:10])
+                                print >> fgeom, d[5], '  '.join(d[2:5]), '  '.join(d[6:9])
 
                 if(i>istart):
                         fgeom.close()

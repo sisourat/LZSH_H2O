@@ -1,0 +1,25 @@
+Here is the input
+&INPUT
+ DT=  20.000000000000000     ,
+ DR=  5.0000000000000001E-003,
+ FPOT="A_prime.interp                                                  ",
+ FXYZ="../Wigner/init1                                                 ",
+ TF=  1000.0000000000000     ,
+ FSTA=          2,
+ /
+
+Reads the initial conditions
+!!!  Enter Oxygen first !!!
+
+Read PESs in A_prime.interp
+There are  30 *   30 *   50 points
+There are   9states
+Reading PESs done 
+
+Lets start the dynamics
+ HOP
+ HOP
+ HOP
+ HOP
+ HOP
+ error in db3val at time   2020.0000000000000     

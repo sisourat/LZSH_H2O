@@ -1,0 +1,9 @@
+! namelist data file
+&input
+ dt=20.0
+ dr=0.005
+ fpot='A_prime.interp'
+ fxyz='../Wigner/init3'
+ tf=1000.0
+ fsta=2
+/
