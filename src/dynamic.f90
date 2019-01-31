@@ -14,6 +14,9 @@ double precision :: r1, r2, theta
 double precision :: ti, tf
 double precision :: dt, dr
 
+!> allows to rescale the velocities after hopping (0: no rescale, 1: rescale)
+integer :: rescal
+
 !> fsta defines the current state 
 integer :: fsta
 
@@ -23,7 +26,7 @@ character(64) :: fpot, fxyz, arg
 integer :: i, j, l
 
 !> all inputs read from namelist input
-namelist /input/ dt, dr, fpot, fxyz, tf, fsta
+namelist /input/ dt, dr, fpot, fxyz, tf, fsta, rescal
 
 if(iargc()==0) then
    write(*,*) "Please provide the input file in command line"
@@ -56,10 +59,10 @@ write(*,'(A)')"!!!  Enter Oxygen first !!!"
  write(100,*)
  write(*,*)
 
-  if(mass(1)/=16.0d0*1836.15d0) then
-    write(*,'(A)')"I said !!!  Enter Oxygen first !!!"
-    stop
-  endif
+!  if(mass(1)/=16.0d0*1836.15d0) then
+!    write(*,'(A)')"I said !!!  Enter Oxygen first !!!"
+!    stop
+!  endif
 
  call compute_dist(npart,xyz,r1,r2,theta)
  write(10,*)r1,r2,theta
@@ -67,7 +70,7 @@ write(*,'(A)')"!!!  Enter Oxygen first !!!"
 ! starts with the dynamics
 
  ti = 0d0
- call dyn(npart,mass,xyz,vxyz,ti,tf,fpot,fsta,dt,dr)
+ call dyn(npart,mass,xyz,vxyz,ti,tf,fpot,fsta,dt,dr,rescal)
 
  call compute_dist(npart,xyz,r1,r2,theta)
  write(*,*)r1,r2,theta

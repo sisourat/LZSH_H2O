@@ -1,9 +1,10 @@
 ! namelist data file
 &input
  dt=20.0
- dr=0.005
- fpot='A_prime.interp'
+ dr=0.001
+ fpot='A_prime_extrapolated.dat'
  fxyz='xyz.txt'
- tf=1000.0
+ tf=60.0
  fsta=2
+ rescal=1
 /

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ntraj=3
+ntraj=10
 itraj=1
 
 until [ $itraj -gt $ntraj ]; do

@@ -1,4 +1,4 @@
-subroutine dyn(npart,mass,xyz,vxyz,ti,tf,fpot,fsta,dt,dr)
+subroutine dyn(npart,mass,xyz,vxyz,ti,tf,fpot,fsta,dt,dr,rescal)
 use bspline_module
 use interpolation
 use RDistributions
@@ -29,6 +29,9 @@ character(64) :: fpot
 !for Landau-Zener 
 double precision, dimension(:), allocatable :: epair, epair_t1, d_epair, d_epair_t1, d2_epair
 double precision :: plz
+
+double precision :: egap, scal, vscal, vunscal, ekin1, ekin2
+integer, intent(in) :: rescal ! rescal if equals to 1
 
 !for the interpolation
 integer :: nsta
@@ -126,7 +129,7 @@ do ista=1,nsta
   call db3val(newr2,newr1,newthe,idr1,idr2,idthe,tr2(ista,:),tr1(ista,:),tthe(ista,:),nr2,nr1,nthe,kr1,kr2,kt,energy(ista,:,:,:),val(ista),iflag,&
  inbvx,inbvy,inbvz,iloy,iloz)
  if(iflag/=0) then
-  write(*,*)"error in db3val at time",time
+  write(*,*)"error in db3val at time (1)",time,newr1,newr2,newthe
   stop
  endif
 enddo
@@ -157,11 +160,11 @@ do while(time<tf)
    call db3val(newr2,newr1,newthe,idr1,idr2,idthe,tr2(ista,:),tr1(ista,:),tthe(ista,:),nr2,nr1,nthe,kr1,kr2,kt,energy(ista,:,:,:),val(ista),iflag,& 
  inbvx,inbvy,inbvz,iloy,iloz)
  if(iflag/=0) then
-  write(*,*)"error in db3val at time",time
+  write(*,*)"error in db3val at time (2)",time,newr1,newr2,newthe
   stop
  endif
  enddo
- write(200,'(5(f20.10,1X),i3)')time,newr1,newr2,newthe,val(fsta),fsta
+ write(200,'(5(f20.10,1X),i3,10(f20.10,1X))')time*0.024,newr1,newr2,newthe,val(fsta),fsta,val(:)
 
 ! apply LZ surface hopping here
 do ista=1,nsta
@@ -174,14 +177,46 @@ enddo
  do ista=1,nsta 
   if(d_epair(ista)*d_epair_t1(ista) < 0d0 .and. d2_epair(ista)>0d0) then
       plz = exp(-0.5d0*pi*sqrt(epair(ista)**3/d2_epair(ista)))
-      if(plz>rand_uniform(0d0,1d0)) then
-        write(*,*)"HOP"
-        fsta=ista
-        epair_t1(:) = 0d0
-        epair(:) = 0d0
-        d_epair(:) = 0d0
-        d_epair_t1(:) = 0d0
-       exit ! only one hop allowed
+
+! is there enough kinetic energy to fill the energy gap, if not => frustrated hop
+      ekin1 = 0d0
+        do i = 1, npart
+          do j = 1, 3
+             vunscal = (xyzt(j,i)-xyzm(j,i))/dt
+             ekin1 = ekin1 + 0.5d0*mass(i)*vunscal**2
+          enddo
+        enddo
+
+      if(plz>rand_uniform(0d0,1d0) .and. epair(ista)<ekin1) then
+        write(*,*)"HOP", ista
+        if(rescal==1) then
+          egap = val(fsta)-val(ista)
+          write(*,*)"Egap,Ekin",egap,ekin1
+          ekin1 = 0d0
+          ekin2 = 0d0
+          scal = egap/9d0 ! the velocities scaled evenly (i.e. energy gap is spread over all coord. 9 comes form 3N dofs)
+          do i = 1, npart
+            do j = 1, 3
+             vunscal = (xyzt(j,i)-xyzm(j,i))/dt
+             ekin1 = ekin1 + 0.5d0*mass(i)*vunscal**2
+             if(1d0+2d0*scal/(mass(i)*vunscal**2)>0d0) then
+                vscal = vunscal*sqrt(1d0+2d0*scal/(mass(i)*vunscal**2))
+                xyzt(j,i) = xyzt(j,i) + (vscal-vunscal)*dt
+             else !! in this case the evenly distributed correction is larger than the veloc. in this coord=> we put the velocity to zero (energy is not strictly conserved)
+                xyzt(j,i) = xyzm(j,i)
+             endif
+             vunscal = (xyzt(j,i)-xyzm(j,i))/dt
+             ekin2 = ekin2 + 0.5d0*mass(i)*vunscal**2
+           enddo
+          enddo
+          write(*,*)"Ekin_unscal,Ekinscal,Energy conservation",ekin1, ekin2, ekin2-egap-ekin1
+        endif
+       fsta=ista
+       epair_t1(:) = 0d0
+       epair(:) = 0d0
+       d_epair(:) = 0d0
+       d_epair_t1(:) = 0d0
+      exit ! only one hop allowed
       endif
   endif
  enddo
