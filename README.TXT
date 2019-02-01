@@ -6,15 +6,14 @@
 
 # INSTALLATION
 # The installation should be straigthforward with gfortran
-# just do to src and type "make"
+# just go to src and type "make"
 # it should generate main.exe
 #
 
-
 # INPUT FILES
 # The main input file defines the timestep (in au), the value (in au) for the numerical derivative of the potential energy (to get the energy gradient)
-# the total simulation time (in fs), the initial state populated by photoexcitation, and the filenames containing 1) the potential energy surfaces and 
-# 2) the initial positions and velocities
+# the total simulation time (in fs), the initial state populated by photoexcitation (e.g. if fsta=1 the dynamics is started on the PES given in the fourth column of pes.txt, fsta=2 fifth column and so on  ), and the filenames containing 1) the potential energy surfaces  and  2) the initial positions and velocities
+# if rescal=0 the veloctities are NOT corrected (to conserve energy) after a surface hopping, if rescal=1 the velocities are scaled accordingly 
 #
 # for example
 # ! namelist data file
@@ -25,6 +24,7 @@
  fxyz='xyz.txt'
  tf=100.0
  fsta=1
+ rescal=1
 /
 
 # potential energy surfaces are in pes.txt
